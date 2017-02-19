@@ -1,4 +1,5 @@
 from mysql_con import MySQL_Connection
+import logging
 
 class Words_database:
     
@@ -16,7 +17,7 @@ class Words_database:
             source_id = self.__add_source(source)
               
             if word_id == None or source_id == None:
-                print "Word  = " + word + " source = " + source
+                logging.warn("Word  = " + word + " source = " + source)
             
             return self.__inc_word_in_source(word_id, source_id, count)
         
@@ -26,15 +27,15 @@ class Words_database:
      
     def __add_word(self, word):
         query = "insert into words(word) values (%s) on duplicate key update id = id"
-        unused, id = self.db_con.execute_query(query, (word,))
-        assert (id != None)
-        return id
+        unused, word_id = self.db_con.execute_query(query, (word,))
+        assert (word_id != None)
+        return word_id
     
     def __add_source(self, source):
         query = "insert into sources(source) values(%s) on duplicate key update id = id"
-        unused, id = self.db_con.execute_query(query, (source,))
-        assert (id != None)
-        return id
+        unused, source_id = self.db_con.execute_query(query, (source,))
+        assert (source_id != None)
+        return source_id
 
 #     def __source_id(self, source):
 #         query = "select id from sources where source = " + self.__quote(source)

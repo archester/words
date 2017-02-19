@@ -1,4 +1,5 @@
 import mysql.connector
+import logging
 
 class MySQL_Connection:
     # construction
@@ -24,12 +25,13 @@ class MySQL_Connection:
         except (mysql.connector.errors.IntegrityError, mysql.connector.errors.DataError):
             return None
         except:
-            print sql, params
+            
+            logging.error("Exception executing query " +  sql + params)
             raise
         
         return cursor, cursor.lastrowid
         
-    # sql should return at most single row containg single column
+    # sql should return at most single row containing single column
     def fetch_single_value(self, sql):
         cursor, id = self.execute_query(sql)
         row = cursor.fetchone()

@@ -6,18 +6,19 @@ import re
 import os.path
 import time
 from collections import Counter
+import logging
+
+logging.basicConfig(level=logging.DEBUG)
 
 class TextParser:
     def __init__(self, words_db):
         self.words_db = words_db
         
     def parse_text(self, source_name, text):
-        #for word in self.__get_words(text):
-        #    self.words_db.add_word(word.lower(), source_name)
         words = self.__get_words(text)
         words_count = Counter(words)
         for word in words_count: 
-            print "Adding %s %d" % (word, words_count[word])
+            logging.debug("Adding word %s %d" % (word, words_count[word]))
             self.words_db.add_word(word.lower(), source_name, count = words_count[word])
 
         self.words_db.apply()
@@ -31,17 +32,16 @@ class FileParser(TextParser):
         
     def parse_file(self, file_path, source_name = None):
         if not os.path.isfile(file_path):
-            print "Didn't find file: " + file_path
+            logging.warn("Didn't find file: " + file_path)
             return None
         
-        print "Parsing file: " + file_path
+        logging.info("Parsing file: " + file_path)
         
         if source_name == None:
             source_name = file_path
         
         with open(file_path, 'r') as f:
-            # optimization: parse the whole file at one
-            # not line by line
+            # optimization: parse the whole file at once, not line by line
             text = f.read()
             TextParser.parse_text(self, source_name, text)
             # one by line version
@@ -69,4 +69,4 @@ parser = DirectoryParser(words_db)
 
 start = time.time()
 parser.parse_dir("/home/areliga/dev/words_samples/", files_extension="txt")
-print "Took: " + str(time.time() - start)
+logging.info("Took: " + str(time.time() - start))
